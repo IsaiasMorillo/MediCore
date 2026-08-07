@@ -1,0 +1,23 @@
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.idea/
+*.userosscache
+*.sln.docstates
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+
+# User-specific files
+.vscode/
+*.log
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+artifacts/

@@ -1,0 +1,61 @@
+name: medicore
+
+services:
+  medicore-api:
+    build:
+      context: .
+      dockerfile: src/Hospital.API/Dockerfile
+    container_name: medicore-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - MongoDbSettings__ConnectionString=mongodb://medicore-db:27017
+      - MongoDbSettings__DatabaseName=MediCoreDb
+      - JwtSettings__Secret=MediCoreHmsDevSecretKey_ChangeMe_0123456789
+      - JwtSettings__Issuer=MediCore
+      - JwtSettings__Audience=MediCoreClients
+      - JwtSettings__ExpirationMinutes=480
+      - SmtpSettings__Enabled=${SMTP_ENABLED:-false}
+      - SmtpSettings__Host=${SMTP_HOST:-}
+      - SmtpSettings__Port=${SMTP_PORT:-587}
+      - SmtpSettings__Username=${SMTP_USERNAME:-}
+      - SmtpSettings__Password=${SMTP_PASSWORD:-}
+      - SmtpSettings__FromEmail=${SMTP_FROM_EMAIL:-no-reply@medicore.do}
+      - SmtpSettings__FromName=MediCore HMS
+    depends_on:
+      medicore-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - medicore-net
+
+  medicore-db:
+    image: mongo:latest
+    container_name: medicore-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - medicore-net
+
+volumes:
+  mongodb_data:
+
+networks:
+  medicore-net:
+    driver: bridge
