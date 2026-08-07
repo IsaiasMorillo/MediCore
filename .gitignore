@@ -21,3 +21,12 @@ obj/
 x64/
 x86/
 artifacts/
+
+# Configuración con credenciales: nunca versionar, solo el ejemplo
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# Documentación y documentos locales (no se versionan)
+*.md
+*.pdf
