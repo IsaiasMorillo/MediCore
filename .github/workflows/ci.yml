@@ -11,6 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate docker-compose.yml
+        run: docker compose config
+
       - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
         with:
