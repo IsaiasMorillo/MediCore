@@ -12,7 +12,7 @@ public static class NursingEndpoints
     {
         var group = app.MapGroup("/api/nursing")
             .WithTags("Nursing")
-            .RequireAuthorization();
+            .RequireAuthorization("InternalStaff");
 
         group.MapPost("/vitals", async (CreateVitalsRecordCommand command, ClaimsPrincipal user, IMediator mediator) =>
         {
@@ -28,7 +28,7 @@ public static class NursingEndpoints
         group.MapGet("/vitals/patient/{patientId}", async (string patientId, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetPatientVitalsQuery(patientId));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .RequireAuthorization("NurseOrDoctor")
         .WithName("GetPatientVitals");

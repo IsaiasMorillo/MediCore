@@ -1,5 +1,6 @@
 using Hospital.Application.Features.Patients.Commands;
 using Hospital.Application.Features.Patients.Queries;
+using Hospital.API.Extensions;
 using Hospital.Domain.Common;
 using MediatR;
 
@@ -11,12 +12,12 @@ public static class PatientsEndpoints
     {
         var group = app.MapGroup("/api/patients")
             .WithTags("Patients")
-            .RequireAuthorization();
+            .RequireAuthorization("InternalStaff");
 
         group.MapGet("/", async (string? search, IMediator mediator) =>
         {
             var result = await mediator.Send(new SearchPatientsQuery(search));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .WithName("SearchPatients");
 
@@ -25,7 +26,7 @@ public static class PatientsEndpoints
             var result = await mediator.Send(new GetPatientQuery(id));
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.NotFound(new { error = result.Error });
+                : ResultToHttp(result);
         })
         .WithName("GetPatient");
 
@@ -61,12 +62,6 @@ public static class PatientsEndpoints
 
     internal static IResult ResultToHttp(Result result)
     {
-        return result.ErrorType switch
-        {
-            ErrorType.NotFound => Results.NotFound(new { error = result.Error }),
-            ErrorType.Conflict => Results.Conflict(new { error = result.Error }),
-            ErrorType.Unauthorized => Results.Unauthorized(),
-            _ => Results.BadRequest(new { error = result.Error })
-        };
+        return ApiResults.FromResult(result);
     }
 }

@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Hospital.API.Extensions;
+using Hospital.Application.Features.Billing.Queries;
 using Hospital.Application.Features.PatientPortal.Queries;
 using MediatR;
 
@@ -14,30 +16,58 @@ public static class PatientPortalEndpoints
 
         group.MapGet("/upcoming-appointments", async (ClaimsPrincipal user, IMediator mediator) =>
         {
-            var patientId = user.FindFirstValue("patientId");
-            if (string.IsNullOrWhiteSpace(patientId))
+            if (!TryGetPatientId(user, out var patientId))
             {
-                return Results.Forbid();
+                return ApiResults.Forbidden("La cuenta no está vinculada a un paciente.");
             }
 
             var result = await mediator.Send(new GetUpcomingAppointmentsQuery(patientId));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ApiResults.FromResult(result);
         })
         .WithName("GetPatientUpcomingAppointments");
 
         group.MapGet("/active-prescriptions", async (ClaimsPrincipal user, IMediator mediator) =>
         {
-            var patientId = user.FindFirstValue("patientId");
-            if (string.IsNullOrWhiteSpace(patientId))
+            if (!TryGetPatientId(user, out var patientId))
             {
-                return Results.Forbid();
+                return ApiResults.Forbidden("La cuenta no está vinculada a un paciente.");
             }
 
             var result = await mediator.Send(new GetActivePrescriptionsQuery(patientId));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ApiResults.FromResult(result);
         })
         .WithName("GetPatientActivePrescriptions");
 
+        group.MapGet("/invoices", async (ClaimsPrincipal user, IMediator mediator) =>
+        {
+            if (!TryGetPatientId(user, out var patientId))
+            {
+                return ApiResults.Forbidden("La cuenta no está vinculada a un paciente.");
+            }
+
+            var result = await mediator.Send(new GetPatientInvoicesQuery(patientId));
+            return result.IsSuccess ? Results.Ok(result.Value) : ApiResults.FromResult(result);
+        })
+        .WithName("GetPatientPortalInvoices");
+
+        group.MapGet("/laboratory-results", async (ClaimsPrincipal user, IMediator mediator) =>
+        {
+            if (!TryGetPatientId(user, out var patientId))
+            {
+                return ApiResults.Forbidden("La cuenta no está vinculada a un paciente.");
+            }
+
+            var result = await mediator.Send(new GetPatientLaboratoryResultsQuery(patientId));
+            return result.IsSuccess ? Results.Ok(result.Value) : ApiResults.FromResult(result);
+        })
+        .WithName("GetPatientPortalLaboratoryResults");
+
         return group;
+    }
+
+    private static bool TryGetPatientId(ClaimsPrincipal user, out string patientId)
+    {
+        patientId = user.FindFirstValue("patientId") ?? string.Empty;
+        return !string.IsNullOrWhiteSpace(patientId);
     }
 }

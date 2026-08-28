@@ -19,6 +19,7 @@ public class MediCoreApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         builder.UseEnvironment("Testing");
         builder.UseSetting("https_port", "5001");
+        builder.UseSetting("Cors:AllowedOrigins:0", "http://localhost:5173");
 
         builder.ConfigureServices(services =>
         {

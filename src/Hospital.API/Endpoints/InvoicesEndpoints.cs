@@ -12,7 +12,7 @@ public static class InvoicesEndpoints
     {
         var group = app.MapGroup("/api/invoices")
             .WithTags("Invoices")
-            .RequireAuthorization();
+            .RequireAuthorization("InternalStaff");
 
         group.MapPost("/", async (CreateInvoiceCommand command, IMediator mediator) =>
         {
@@ -29,15 +29,17 @@ public static class InvoicesEndpoints
             var result = await mediator.Send(new GetInvoiceQuery(id));
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.NotFound(new { error = result.Error });
+                : ResultToHttp(result);
         })
+        .RequireAuthorization("ReceptionOrAdmin")
         .WithName("GetInvoice");
 
         group.MapGet("/patient/{patientId}", async (string patientId, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetPatientInvoicesQuery(patientId));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
+        .RequireAuthorization("ReceptionOrAdmin")
         .WithName("GetPatientInvoices");
 
         group.MapPost("/{id}/pay", async (string id, PayInvoiceRequest request, IMediator mediator) =>

@@ -1,5 +1,6 @@
 using Hospital.Application.Features.Reports.Queries;
 using MediatR;
+using static Hospital.API.Endpoints.PatientsEndpoints;
 
 namespace Hospital.API.Endpoints;
 
@@ -9,12 +10,12 @@ public static class ReportsEndpoints
     {
         var group = app.MapGroup("/api/reports")
             .WithTags("Reports")
-            .RequireAuthorization();
+            .RequireAuthorization("InternalStaff");
 
         group.MapGet("/invoices-summary", async (DateTime? from, DateTime? to, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetInvoicesSummaryReportQuery(from, to));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .RequireAuthorization("AdminOnly")
         .WithName("GetInvoicesSummaryReport");
@@ -22,7 +23,7 @@ public static class ReportsEndpoints
         group.MapGet("/medications-dispensed", async (int? limit, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetMedicationsDispensedReportQuery(limit ?? 10));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .RequireAuthorization("PharmacyOnly")
         .WithName("GetMedicationsDispensedReport");
@@ -30,7 +31,7 @@ public static class ReportsEndpoints
         group.MapGet("/laboratory-most-requested", async (int? limit, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetLaboratoryMostRequestedReportQuery(limit ?? 10));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .RequireAuthorization("LaboratoryOnly")
         .WithName("GetLaboratoryMostRequestedReport");
@@ -38,7 +39,7 @@ public static class ReportsEndpoints
         group.MapGet("/patients-most-frequent", async (int? limit, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetPatientsMostFrequentReportQuery(limit ?? 10));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .RequireAuthorization("AdminOnly")
         .WithName("GetPatientsMostFrequentReport");
@@ -46,7 +47,7 @@ public static class ReportsEndpoints
         group.MapGet("/low-stock", async (IMediator mediator) =>
         {
             var result = await mediator.Send(new GetLowStockReportQuery());
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .RequireAuthorization("PharmacyOnly")
         .WithName("GetLowStockReport");

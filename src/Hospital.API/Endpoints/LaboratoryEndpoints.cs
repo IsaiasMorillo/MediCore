@@ -12,10 +12,11 @@ public static class LaboratoryEndpoints
     {
         var group = app.MapGroup("/api/laboratory")
             .WithTags("Laboratory")
-            .RequireAuthorization();
+            .RequireAuthorization("InternalStaff");
 
         group.MapGet("/test-types", (ILaboratoryOrderFactory factory) =>
             Results.Ok(new { supported = factory.SupportedTestTypes, templates = Enum.GetNames<Hospital.Domain.Enums.TestType>() }))
+            .RequireAuthorization("DoctorOrLaboratory")
             .WithName("GetLaboratoryTestTypes");
 
         group.MapPost("/orders", async (CreateLaboratoryOrderCommand command, IMediator mediator) =>
@@ -33,15 +34,17 @@ public static class LaboratoryEndpoints
             var result = await mediator.Send(new GetLaboratoryOrderQuery(id));
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.NotFound(new { error = result.Error });
+                : ResultToHttp(result);
         })
+        .RequireAuthorization("DoctorOrLaboratory")
         .WithName("GetLaboratoryOrder");
 
         group.MapGet("/orders/patient/{patientId}", async (string patientId, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetPatientLaboratoryOrdersQuery(patientId));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
+        .RequireAuthorization("DoctorOrLaboratory")
         .WithName("GetPatientLaboratoryOrders");
 
         group.MapPost("/orders/{id}/results", async (string id, Dictionary<string, object?> results, IMediator mediator) =>

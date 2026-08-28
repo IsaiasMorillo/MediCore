@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\src\Hospital.Domain\Hospital.Domain.csproj" />
     <ProjectReference Include="..\..\src\Hospital.Application\Hospital.Application.csproj" />
     <ProjectReference Include="..\..\src\Hospital.Infrastructure\Hospital.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Hospital.API\Hospital.API.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,10 +12,11 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - MongoDbSettings__ConnectionString=mongodb://medicore-db:27017
       - MongoDbSettings__DatabaseName=MediCoreDb
-      - JwtSettings__Secret=MediCoreHmsDevSecretKey_ChangeMe_0123456789
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=MediCore
       - JwtSettings__Audience=MediCoreClients
       - JwtSettings__ExpirationMinutes=480
+      - Cors__AllowedOrigins__0=${CORS_ALLOWED_ORIGIN:-http://localhost:5173}
       - SmtpSettings__Enabled=${SMTP_ENABLED:-false}
       - SmtpSettings__Host=${SMTP_HOST:-}
       - SmtpSettings__Port=${SMTP_PORT:-587}
@@ -37,7 +38,7 @@ services:
       - medicore-net
 
   medicore-db:
-    image: mongo:latest
+    image: mongo:8.0
     container_name: medicore-db
     ports:
       - "27017:27017"

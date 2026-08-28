@@ -1,4 +1,6 @@
 using Hospital.Application.Features.PatientPortal.Queries;
+using Hospital.Application.Features.Laboratory.Commands;
+using Hospital.Application.Features.Laboratory.Queries;
 using Hospital.Domain.Common;
 using Hospital.Domain.Entities;
 using Hospital.Domain.Enums;
@@ -104,5 +106,23 @@ public class GetActivePrescriptionsQueryHandler(
         }).ToList();
 
         return Result.Success((IReadOnlyList<ActivePrescriptionResponse>)response);
+    }
+}
+
+public class GetPatientLaboratoryResultsQueryHandler(
+    ILaboratoryOrderRepository laboratoryOrderRepository)
+    : IRequestHandler<GetPatientLaboratoryResultsQuery, Result<IReadOnlyList<LaboratoryOrderResponse>>>
+{
+    public async Task<Result<IReadOnlyList<LaboratoryOrderResponse>>> Handle(
+        GetPatientLaboratoryResultsQuery query,
+        CancellationToken cancellationToken)
+    {
+        var orders = await laboratoryOrderRepository.GetByPatientAsync(query.PatientId, cancellationToken);
+        var results = orders
+            .Where(order => order.Status == LaboratoryOrderStatus.ResultadoCargado)
+            .Select(GetLaboratoryOrderQueryHandler.ToResponse)
+            .ToList();
+
+        return Result.Success((IReadOnlyList<LaboratoryOrderResponse>)results);
     }
 }

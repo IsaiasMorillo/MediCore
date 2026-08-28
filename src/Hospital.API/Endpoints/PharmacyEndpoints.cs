@@ -11,13 +11,14 @@ public static class PharmacyEndpoints
     {
         var group = app.MapGroup("/api/pharmacy")
             .WithTags("Pharmacy")
-            .RequireAuthorization();
+            .RequireAuthorization("InternalStaff");
 
         group.MapGet("/medications", async (string? search, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetMedicationsQuery(search));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
+        .RequireAuthorization("DoctorOrPharmacy")
         .WithName("GetMedications");
 
         group.MapPost("/medications", async (CreateMedicationCommand command, IMediator mediator) =>
@@ -60,8 +61,9 @@ public static class PharmacyEndpoints
         group.MapGet("/prescriptions/patient/{patientId}", async (string patientId, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetPatientPrescriptionsQuery(patientId));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
+        .RequireAuthorization("DoctorOrPharmacy")
         .WithName("GetPatientPrescriptions");
 
         group.MapPost("/prescriptions/{id}/dispense", async (string id, DispenseRequest request, IMediator mediator) =>

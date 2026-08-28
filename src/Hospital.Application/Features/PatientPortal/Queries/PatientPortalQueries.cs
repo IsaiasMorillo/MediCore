@@ -1,5 +1,6 @@
 using Hospital.Domain.Common;
 using Hospital.Domain.Enums;
+using Hospital.Application.Features.Laboratory.Queries;
 using MediatR;
 
 namespace Hospital.Application.Features.PatientPortal.Queries;
@@ -9,6 +10,9 @@ public record GetUpcomingAppointmentsQuery(string PatientId)
 
 public record GetActivePrescriptionsQuery(string PatientId)
     : IRequest<Result<IReadOnlyList<ActivePrescriptionResponse>>>;
+
+public record GetPatientLaboratoryResultsQuery(string PatientId)
+    : IRequest<Result<IReadOnlyList<LaboratoryOrderResponse>>>;
 
 public record UpcomingAppointmentResponse(
     string Id,

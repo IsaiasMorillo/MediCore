@@ -1,3 +1,5 @@
+using Hospital.API.Extensions;
+
 namespace Hospital.API.Filters;
 
 public class ModelValidationFilter : IEndpointFilter
@@ -7,7 +9,7 @@ public class ModelValidationFilter : IEndpointFilter
         if (context.HttpContext.Request.HasJsonContentType() &&
             context.Arguments.Any(argument => argument is null))
         {
-            return Results.BadRequest(new { error = "El cuerpo de la solicitud es inválido o está vacío." });
+            return ApiResults.Validation("El cuerpo de la solicitud es inválido o está vacío.");
         }
 
         return await next(context);

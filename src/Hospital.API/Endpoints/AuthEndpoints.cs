@@ -1,4 +1,5 @@
 using Hospital.Application.Features.Auth.Commands;
+using Hospital.API.Extensions;
 using Hospital.Domain.Common;
 using MediatR;
 
@@ -42,11 +43,7 @@ public static class AuthEndpoints
                 });
             }
 
-            return result.ErrorType switch
-            {
-                ErrorType.Unauthorized or ErrorType.Forbidden => Results.Unauthorized(),
-                _ => Results.BadRequest(new { error = result.Error })
-            };
+            return ApiResults.FromResult(result);
         })
         .AllowAnonymous()
         .WithName("Login");
@@ -54,7 +51,9 @@ public static class AuthEndpoints
         group.MapPost("/forgot-password", async (ForgotPasswordCommand command, IMediator mediator) =>
         {
             var result = await mediator.Send(command);
-            return result.IsSuccess ? Results.Ok(new { message = "Si el correo existe, recibirá las instrucciones." }) : Results.BadRequest(new { error = result.Error });
+            return result.IsSuccess
+                ? Results.Ok(new { message = "Si el correo existe, recibirá las instrucciones." })
+                : ApiResults.FromResult(result);
         })
         .AllowAnonymous()
         .WithName("ForgotPassword");
@@ -62,7 +61,7 @@ public static class AuthEndpoints
         group.MapPost("/reset-password", async (ResetPasswordCommand command, IMediator mediator) =>
         {
             var result = await mediator.Send(command);
-            return result.IsSuccess ? Results.Ok() : Results.BadRequest(new { error = result.Error });
+            return result.IsSuccess ? Results.Ok() : ApiResults.FromResult(result);
         })
         .AllowAnonymous()
         .WithName("ResetPassword");
@@ -74,6 +73,6 @@ public static class AuthEndpoints
     {
         return result.IsSuccess
             ? Results.Created($"/api/users/{result.Value}", new { id = result.Value })
-            : Results.BadRequest(new { error = result.Error });
+            : ApiResults.FromResult(result);
     }
 }

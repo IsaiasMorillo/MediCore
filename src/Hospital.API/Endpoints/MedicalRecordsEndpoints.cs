@@ -11,7 +11,7 @@ public static class MedicalRecordsEndpoints
     {
         var group = app.MapGroup("/api/medical-records")
             .WithTags("MedicalRecords")
-            .RequireAuthorization();
+            .RequireAuthorization("DoctorOnly");
 
         group.MapPost("/", async (CreateMedicalRecordCommand command, IMediator mediator) =>
         {
@@ -28,7 +28,7 @@ public static class MedicalRecordsEndpoints
             var result = await mediator.Send(new SearchPatientClinicalHistoryQuery(term));
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.BadRequest(new { error = result.Error });
+                : ResultToHttp(result);
         })
         .RequireAuthorization("DoctorOnly")
         .WithName("SearchPatientClinicalHistory");
@@ -38,7 +38,7 @@ public static class MedicalRecordsEndpoints
             var result = await mediator.Send(new GetMedicalRecordQuery(id));
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.NotFound(new { error = result.Error });
+                : ResultToHttp(result);
         })
         .RequireAuthorization("DoctorOnly")
         .WithName("GetMedicalRecord");
@@ -46,7 +46,7 @@ public static class MedicalRecordsEndpoints
         group.MapGet("/patient/{patientId}", async (string patientId, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetPatientMedicalRecordsQuery(patientId));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .RequireAuthorization("DoctorOnly")
         .WithName("GetPatientMedicalRecords");

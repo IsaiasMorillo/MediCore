@@ -12,12 +12,12 @@ public static class DoctorsEndpoints
     {
         var group = app.MapGroup("/api/doctors")
             .WithTags("Doctors")
-            .RequireAuthorization();
+            .RequireAuthorization("InternalStaff");
 
         group.MapGet("/", async (string? specialty, string? search, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetDoctorsQuery(specialty, search));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .WithName("GetDoctors");
 
@@ -26,7 +26,7 @@ public static class DoctorsEndpoints
             var result = await mediator.Send(new GetDoctorQuery(id));
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.NotFound(new { error = result.Error });
+                : ResultToHttp(result);
         })
         .WithName("GetDoctor");
 

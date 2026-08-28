@@ -13,7 +13,7 @@ public static class AppointmentsEndpoints
     {
         var group = app.MapGroup("/api/appointments")
             .WithTags("Appointments")
-            .RequireAuthorization();
+            .RequireAuthorization("InternalStaff");
 
         group.MapPost("/", async (CreateAppointmentCommand command, IMediator mediator) =>
         {
@@ -30,7 +30,7 @@ public static class AppointmentsEndpoints
             var result = await mediator.Send(new GetAppointmentQuery(id));
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.NotFound(new { error = result.Error });
+                : ResultToHttp(result);
         })
         .WithName("GetAppointment");
 
@@ -39,14 +39,14 @@ public static class AppointmentsEndpoints
             var result = await mediator.Send(new GetDoctorAvailabilityQuery(doctorId, query.Date));
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.NotFound(new { error = result.Error });
+                : ResultToHttp(result);
         })
         .WithName("GetDoctorAvailability");
 
         group.MapGet("/availability", async ([AsParameters] DateOnlyQuery query, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetGlobalAvailabilityQuery(query.Date));
-            return Results.Ok(result.Value);
+            return result.IsSuccess ? Results.Ok(result.Value) : ResultToHttp(result);
         })
         .RequireAuthorization("ReceptionOrAdmin")
         .WithName("GetGlobalAvailability");
