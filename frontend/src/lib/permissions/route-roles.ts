@@ -1,0 +1,27 @@
+import type { UserRole } from "@/lib/permissions/roles"
+import { INTERNAL_ROLES as INTERNAL_STAFF_ROLES } from "@/lib/permissions/roles"
+
+export const INTERNAL_ROLES = INTERNAL_STAFF_ROLES
+
+export const CLINICAL_ROLES = ["Admin", "Medico"] as const satisfies readonly UserRole[]
+export const NURSING_ROLES = [
+  "Admin",
+  "Medico",
+  "Enfermero",
+] as const satisfies readonly UserRole[]
+export const LABORATORY_ROLES = [
+  "Admin",
+  "Medico",
+  "Laboratorio",
+] as const satisfies readonly UserRole[]
+export const PHARMACY_ROLES = [
+  "Admin",
+  "Medico",
+  "Farmacia",
+] as const satisfies readonly UserRole[]
+export const BILLING_ROLES = ["Admin", "Recepcion"] as const satisfies readonly UserRole[]
+export const REPORT_ROLES = [
+  "Admin",
+  "Farmacia",
+  "Laboratorio",
+] as const satisfies readonly UserRole[]
