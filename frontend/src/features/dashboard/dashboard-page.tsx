@@ -14,7 +14,6 @@ import {
   FileText,
   HeartPulse,
   LayoutDashboard,
-  LoaderCircle,
   Menu,
   MessageSquare,
   MoreHorizontal,
@@ -32,7 +31,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { Area, AreaChart } from "@/components/charts/area-chart"
-import { Bar, BarChart } from "@/components/charts/bar-chart"
+import { Bar } from "@/components/charts/bar"
+import { BarChart } from "@/components/charts/bar-chart"
 import { chartCssVars } from "@/components/charts/chart-context"
 import { Grid } from "@/components/charts/grid"
 import { BarXAxis } from "@/components/charts/bar-x-axis"

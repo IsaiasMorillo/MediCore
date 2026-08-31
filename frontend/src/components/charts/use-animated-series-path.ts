@@ -1,6 +1,7 @@
 "use client";
 
 import { animate, useReducedMotion } from "motion/react";
+import type { CurveFactory } from "@visx/vendor/d3-shape";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LINE_LOADING_PULSE_EASE } from "./line-loading-timing";
 import {
@@ -10,9 +11,6 @@ import {
   seriesPathFromPoints,
   seriesPathTransitionSignature,
 } from "./series-path-utils";
-
-// biome-ignore lint/suspicious/noExplicitAny: d3 curve factory type
-type CurveFactory = any;
 
 export interface UseAnimatedSeriesPathOptions {
   renderData: Record<string, unknown>[];

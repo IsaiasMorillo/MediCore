@@ -58,7 +58,10 @@ export function usePathStrokeMetrics(
         ? prev
         : { pathD: d, pathLength: len }
     );
-  }, deps);
+  // The caller owns the geometry dependencies because this hook supports
+  // several chart primitives with different SVG inputs.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathRef, ...deps]);
 
   return metrics;
 }
