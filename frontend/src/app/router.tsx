@@ -7,13 +7,25 @@ import {
   NotFoundPage,
   PatientPortalPendingPage,
 } from "@/components/feedback/feedback-states"
-import { DashboardRoute, LoginRoute } from "@/app/route-elements"
+import {
+  AdminAccountRoute,
+  DashboardRoute,
+  ForgotPasswordRoute,
+  LoginRoute,
+  PatientAccountRoute,
+  PatientCreateRoute,
+  PatientDetailRoute,
+  PatientEditRoute,
+  PatientsRoute,
+  ResetPasswordRoute,
+} from "@/app/route-elements"
 import {
   BILLING_ROLES,
   CLINICAL_ROLES,
   INTERNAL_ROLES,
   LABORATORY_ROLES,
   NURSING_ROLES,
+  PATIENT_WRITE_ROLES,
   PHARMACY_ROLES,
   REPORT_ROLES,
 } from "@/lib/permissions/route-roles"
@@ -34,6 +46,14 @@ export const router = createBrowserRouter([
     element: <LoginRoute />,
   },
   {
+    path: "/forgot-password",
+    element: <ForgotPasswordRoute />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPasswordRoute />,
+  },
+  {
     path: "/portal",
     element: (
       <RequirePatientAccess>
@@ -50,7 +70,31 @@ export const router = createBrowserRouter([
         path: "patients",
         element: (
           <RequireRoles roles={INTERNAL_ROLES}>
-            <ModulePlaceholderPage moduleId="patients" />
+            <PatientsRoute />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "patients/new",
+        element: (
+          <RequireRoles roles={PATIENT_WRITE_ROLES}>
+            <PatientCreateRoute />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "patients/:patientId",
+        element: (
+          <RequireRoles roles={INTERNAL_ROLES}>
+            <PatientDetailRoute />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "patients/:patientId/edit",
+        element: (
+          <RequireRoles roles={PATIENT_WRITE_ROLES}>
+            <PatientEditRoute />
           </RequireRoles>
         ),
       },
@@ -122,7 +166,31 @@ export const router = createBrowserRouter([
         path: "admin/accounts",
         element: (
           <RequireRoles roles={["Admin"]}>
-            <ModulePlaceholderPage moduleId="admin/accounts" />
+            <Navigate replace to="/app/admin/accounts/new" />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "admin/accounts/new",
+        element: (
+          <RequireRoles roles={["Admin"]}>
+            <AdminAccountRoute />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "admin/patient-accounts/new",
+        element: (
+          <RequireRoles roles={["Admin"]}>
+            <PatientAccountRoute />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "admin/patient-accounts",
+        element: (
+          <RequireRoles roles={["Admin"]}>
+            <Navigate replace to="/app/admin/patient-accounts/new" />
           </RequireRoles>
         ),
       },

@@ -3,10 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { RequireInternalAccess } from "@/app/route-guards"
-import {
-  LoginRequiredPage,
-  PatientPortalPendingPage,
-} from "@/components/feedback/feedback-states"
+import { PatientPortalPendingPage } from "@/components/feedback/feedback-states"
 import { InternalAppShell } from "@/components/layout/internal-app-shell"
 import { AuthSessionProvider } from "@/lib/auth/auth-session-provider"
 import {
@@ -50,7 +47,7 @@ function renderProtectedRoute(initialSession?: AuthSession) {
           <Route element={<RequireInternalAccess />} path="/app">
             <Route element={<p>Contenido interno</p>} index />
           </Route>
-          <Route element={<LoginRequiredPage />} path="/login" />
+          <Route element={<p>Inicio de sesión</p>} path="/login" />
           <Route element={<PatientPortalPendingPage />} path="/portal" />
           <Route element={<InternalAppShell />} path="/internal-fallback" />
         </Routes>
@@ -63,7 +60,7 @@ describe("route guards", () => {
   it("redirects an anonymous visitor to login", () => {
     renderProtectedRoute()
 
-    expect(screen.getByRole("heading", { name: "Inicio de sesión pendiente" })).toBeInTheDocument()
+    expect(screen.getByText("Inicio de sesión")).toBeInTheDocument()
   })
 
   it("keeps patient accounts out of the internal shell", () => {

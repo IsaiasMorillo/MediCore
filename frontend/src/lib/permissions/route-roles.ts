@@ -2,6 +2,8 @@ import type { UserRole } from "@/lib/permissions/roles"
 import { INTERNAL_ROLES as INTERNAL_STAFF_ROLES } from "@/lib/permissions/roles"
 
 export const INTERNAL_ROLES = INTERNAL_STAFF_ROLES
+export const PATIENT_WRITE_ROLES = ["Admin", "Recepcion"] as const satisfies readonly UserRole[]
+export const PATIENT_DELETE_ROLES = ["Admin"] as const satisfies readonly UserRole[]
 
 export const CLINICAL_ROLES = ["Admin", "Medico"] as const satisfies readonly UserRole[]
 export const NURSING_ROLES = [
