@@ -6,11 +6,16 @@ import { PageHeader } from "@/components/layout/page-header"
 import { FormAlert } from "@/features/auth/components/form-controls"
 import { PatientDetailSections } from "@/features/patients/components/patient-detail-sections"
 import { PatientStatusBadge } from "@/features/patients/components/patient-status-badge"
+import { PatientMedicalRecordsPanel } from "@/features/medical-records/components/patient-medical-records-panel"
+import { PatientVitalsPanel } from "@/features/nursing/components/patient-vitals-panel"
+import { PatientLaboratoryOrdersPanel } from "@/features/laboratory/components/patient-laboratory-orders-panel"
+import { PatientPrescriptionsPanel } from "@/features/pharmacy/components/patient-prescriptions-panel"
+import { PatientInvoicesPanel } from "@/features/billing/components/patient-invoices-panel"
 import { useDeletePatient, usePatient } from "@/features/patients/hooks/use-patients"
 import { getPatientErrorMessage } from "@/features/patients/utils/patient-errors"
 import { formatPatientName } from "@/features/patients/utils/patient-formatting"
 import { hasAnyRole } from "@/lib/permissions/roles"
-import { PATIENT_DELETE_ROLES, PATIENT_WRITE_ROLES } from "@/lib/permissions/route-roles"
+import { BILLING_ROLES, CLINICAL_ROLES, LABORATORY_ORDER_WRITE_ROLES, LABORATORY_RESULT_WRITE_ROLES, LABORATORY_ROLES, NURSING_ROLES, NURSING_WRITE_ROLES, PATIENT_DELETE_ROLES, PATIENT_WRITE_ROLES, PHARMACY_MANAGE_ROLES, PHARMACY_ROLES, PRESCRIPTION_WRITE_ROLES } from "@/lib/permissions/route-roles"
 import { useAuthSession } from "@/lib/auth/use-auth-session"
 
 export function PatientDetailPage() {
@@ -41,6 +46,16 @@ export function PatientDetailPage() {
   const patient = patientQuery.data
   const canEdit = session ? hasAnyRole(session.user.roles, PATIENT_WRITE_ROLES) : false
   const canDelete = session ? hasAnyRole(session.user.roles, PATIENT_DELETE_ROLES) : false
+  const canViewMedicalRecords = session ? hasAnyRole(session.user.roles, CLINICAL_ROLES) : false
+  const canViewVitals = session ? hasAnyRole(session.user.roles, NURSING_ROLES) : false
+  const canCreateVitals = session ? hasAnyRole(session.user.roles, NURSING_WRITE_ROLES) : false
+  const canViewLaboratory = session ? hasAnyRole(session.user.roles, LABORATORY_ROLES) : false
+  const canCreateLaboratoryOrder = session ? hasAnyRole(session.user.roles, LABORATORY_ORDER_WRITE_ROLES) : false
+  const canLoadLaboratoryResults = session ? hasAnyRole(session.user.roles, LABORATORY_RESULT_WRITE_ROLES) : false
+  const canViewPharmacy = session ? hasAnyRole(session.user.roles, PHARMACY_ROLES) : false
+  const canCreatePrescription = session ? hasAnyRole(session.user.roles, PRESCRIPTION_WRITE_ROLES) : false
+  const canDispensePrescription = session ? hasAnyRole(session.user.roles, PHARMACY_MANAGE_ROLES) : false
+  const canViewBilling = session ? hasAnyRole(session.user.roles, BILLING_ROLES) : false
   const patientName = formatPatientName(patient)
 
   const handleDelete = async () => {
@@ -134,6 +149,11 @@ export function PatientDetailPage() {
       ) : null}
 
       <PatientDetailSections patient={patient} />
+      {canViewMedicalRecords ? <PatientMedicalRecordsPanel patientId={patient.id} /> : null}
+      {canViewVitals ? <PatientVitalsPanel canCreate={canCreateVitals} patientId={patient.id} /> : null}
+      {canViewLaboratory ? <PatientLaboratoryOrdersPanel canCreate={canCreateLaboratoryOrder} canLoadResults={canLoadLaboratoryResults} patientId={patient.id} /> : null}
+      {canViewPharmacy ? <PatientPrescriptionsPanel canCreate={canCreatePrescription} canDispense={canDispensePrescription} patientId={patient.id} /> : null}
+      {canViewBilling ? <PatientInvoicesPanel canCreate={canViewBilling} patientId={patient.id} /> : null}
     </div>
   )
 }
