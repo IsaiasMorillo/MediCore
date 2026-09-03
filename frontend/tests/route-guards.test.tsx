@@ -3,7 +3,6 @@ import { MemoryRouter, Route, Routes } from "react-router-dom"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { RequireInternalAccess } from "@/app/route-guards"
-import { PatientPortalPendingPage } from "@/components/feedback/feedback-states"
 import { InternalAppShell } from "@/components/layout/internal-app-shell"
 import { AuthSessionProvider } from "@/lib/auth/auth-session-provider"
 import {
@@ -48,7 +47,7 @@ function renderProtectedRoute(initialSession?: AuthSession) {
             <Route element={<p>Contenido interno</p>} index />
           </Route>
           <Route element={<p>Inicio de sesión</p>} path="/login" />
-          <Route element={<PatientPortalPendingPage />} path="/portal" />
+          <Route element={<p>Portal del paciente</p>} path="/portal" />
           <Route element={<InternalAppShell />} path="/internal-fallback" />
         </Routes>
       </MemoryRouter>
@@ -66,7 +65,7 @@ describe("route guards", () => {
   it("keeps patient accounts out of the internal shell", () => {
     renderProtectedRoute(patientSession)
 
-    expect(screen.getByRole("heading", { name: "Portal en preparación" })).toBeInTheDocument()
+    expect(screen.getByText("Portal del paciente")).toBeInTheDocument()
     expect(screen.queryByText("Contenido interno")).not.toBeInTheDocument()
   })
 

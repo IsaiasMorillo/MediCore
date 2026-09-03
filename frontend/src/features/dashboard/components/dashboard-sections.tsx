@@ -7,6 +7,7 @@ import type {
   CategoryCountRow,
   MedicationDispensedRow,
 } from "@/features/dashboard/types"
+import { sortBillingRowsDescending } from "@/features/reports/utils/report-formatting"
 
 const numberFormatter = new Intl.NumberFormat("es-DO", {
   maximumFractionDigits: 0,
@@ -144,9 +145,10 @@ function RankedList({
 
 function BillingReport({ reports }: { reports: DashboardReports }) {
   const rows = reports.billing.data ?? []
+  const recentRows = sortBillingRowsDescending(rows)
   const totalInvoices = rows.reduce((sum, row) => sum + row.invoiceCount, 0)
   const totalInvoiced = rows.reduce((sum, row) => sum + row.totalInvoiced, 0)
-  const latestMonth = rows[rows.length - 1]
+  const latestMonth = recentRows[0]
 
   return (
     <ReportCard
@@ -167,7 +169,7 @@ function BillingReport({ reports }: { reports: DashboardReports }) {
         <span>Facturas · total</span>
       </div>
       <ul className="divide-y divide-line/60">
-        {rows.slice(-4).map((row) => (
+        {recentRows.slice(0, 4).map((row) => (
           <li className="flex items-center justify-between gap-4 py-3 text-xs" key={`${row.year}-${row.month}`}>
             <span className="font-medium text-ink-muted">{formatMonth(row)}</span>
             <span className="text-right font-semibold tabular-nums text-ink">

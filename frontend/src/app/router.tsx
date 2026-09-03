@@ -5,7 +5,6 @@ import {
 
 import {
   NotFoundPage,
-  PatientPortalPendingPage,
 } from "@/components/feedback/feedback-states"
 import {
   AdminAccountRoute,
@@ -36,10 +35,13 @@ import {
   PatientEditRoute,
   PatientMedicalRecordsRoute,
   PatientsRoute,
+  PatientPortalRoute,
+  PatientPortalShellRoute,
   PharmacyMedicationCreateRoute,
   PharmacyMedicationEditRoute,
   PharmacyMedicationsRoute,
   PharmacyPrescriptionsRoute,
+  ReportsRoute,
   ResetPasswordRoute,
 } from "@/app/route-elements"
 import {
@@ -56,9 +58,11 @@ import {
   DOCTOR_MANAGE_ROLES,
   PHARMACY_MANAGE_ROLES,
   PHARMACY_ROLES,
+  REPORT_BILLING_ROLES,
+  REPORT_LABORATORY_ROLES,
+  REPORT_PHARMACY_ROLES,
   REPORT_ROLES,
 } from "@/lib/permissions/route-roles"
-import { ModulePlaceholderPage } from "@/features/dashboard/pages/module-placeholder-page"
 import {
   RequireInternalAccess,
   RequirePatientAccess,
@@ -86,9 +90,17 @@ export const router = createBrowserRouter([
     path: "/portal",
     element: (
       <RequirePatientAccess>
-        <PatientPortalPendingPage />
+        <PatientPortalShellRoute />
       </RequirePatientAccess>
     ),
+    children: [
+      { index: true, element: <PatientPortalRoute section="overview" /> },
+      { path: "appointments", element: <PatientPortalRoute section="appointments" /> },
+      { path: "prescriptions", element: <PatientPortalRoute section="prescriptions" /> },
+      { path: "invoices", element: <PatientPortalRoute section="invoices" /> },
+      { path: "laboratory-results", element: <PatientPortalRoute section="laboratory-results" /> },
+      { path: "*", element: <Navigate replace to="/portal" /> },
+    ],
   },
   {
     path: "/app",
@@ -339,7 +351,31 @@ export const router = createBrowserRouter([
         path: "reports",
         element: (
           <RequireRoles roles={REPORT_ROLES}>
-            <ModulePlaceholderPage moduleId="reports" />
+            <ReportsRoute section="overview" />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "reports/billing",
+        element: (
+          <RequireRoles roles={REPORT_BILLING_ROLES}>
+            <ReportsRoute section="billing" />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "reports/pharmacy",
+        element: (
+          <RequireRoles roles={REPORT_PHARMACY_ROLES}>
+            <ReportsRoute section="pharmacy" />
+          </RequireRoles>
+        ),
+      },
+      {
+        path: "reports/laboratory",
+        element: (
+          <RequireRoles roles={REPORT_LABORATORY_ROLES}>
+            <ReportsRoute section="laboratory" />
           </RequireRoles>
         ),
       },

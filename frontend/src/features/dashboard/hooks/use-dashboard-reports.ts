@@ -26,7 +26,7 @@ export function useDashboardReports() {
 
   const billing = useQuery({
     queryKey: dashboardReportKeys.billing(),
-    queryFn: fetchBillingSummary,
+    queryFn: () => fetchBillingSummary(),
     enabled: isAdmin,
   })
   const patientsMostFrequent = useQuery({

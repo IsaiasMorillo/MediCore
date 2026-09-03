@@ -9,7 +9,13 @@ import {
 } from "@/features/billing/utils/billing-formatting"
 import { InvoiceStatusBadge } from "@/features/billing/utils/billing-status"
 
-export function InvoiceList({ invoices }: { invoices: readonly Invoice[] }) {
+export function InvoiceList({
+  context = "internal",
+  invoices,
+}: {
+  context?: "internal" | "portal"
+  invoices: readonly Invoice[]
+}) {
   const sortedInvoices = sortInvoices(invoices)
 
   if (sortedInvoices.length === 0) {
@@ -18,8 +24,8 @@ export function InvoiceList({ invoices }: { invoices: readonly Invoice[] }) {
         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand-strong">
           <ReceiptText aria-hidden="true" className="h-4 w-4" />
         </span>
-        <p className="mt-3 text-sm font-semibold text-ink">No hay facturas para este paciente</p>
-        <p className="mt-1 max-w-sm text-xs leading-5 text-ink-muted">Las facturas creadas desde el área de recepción aparecerán aquí.</p>
+        <p className="mt-3 text-sm font-semibold text-ink">{context === "portal" ? "No tienes facturas registradas" : "No hay facturas para este paciente"}</p>
+        <p className="mt-1 max-w-sm text-xs leading-5 text-ink-muted">{context === "portal" ? "Las facturas emitidas a tu nombre aparecerán aquí cuando estén disponibles." : "Las facturas creadas desde el área de recepción aparecerán aquí."}</p>
       </div>
     )
   }
@@ -56,18 +62,44 @@ export function InvoiceList({ invoices }: { invoices: readonly Invoice[] }) {
             </div>
           </dl>
 
-          <div className="mt-4 flex flex-wrap gap-2 border-t border-line/70 pt-4">
-            <Link className="inline-flex items-center gap-1.5 rounded-xl bg-brand-soft px-3 py-2 text-xs font-semibold text-brand-strong transition-colors hover:bg-brand-soft/70" to={`/app/billing/invoices/${encodeURIComponent(invoice.id)}`}>
-              Ver factura
-              <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
-            </Link>
-            <Link className="inline-flex items-center gap-1.5 rounded-xl border border-line px-3 py-2 text-xs font-semibold text-ink-muted transition-colors hover:border-brand/40 hover:text-ink" to={`/app/patients/${encodeURIComponent(invoice.patientId)}`}>
-              Abrir paciente
-              <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
-            </Link>
-          </div>
+          {context === "portal" ? <PortalInvoiceDetails invoice={invoice} /> : (
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-line/70 pt-4">
+              <Link className="inline-flex items-center gap-1.5 rounded-xl bg-brand-soft px-3 py-2 text-xs font-semibold text-brand-strong transition-colors hover:bg-brand-soft/70" to={`/app/billing/invoices/${encodeURIComponent(invoice.id)}`}>
+                Ver factura
+                <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
+              </Link>
+              <Link className="inline-flex items-center gap-1.5 rounded-xl border border-line px-3 py-2 text-xs font-semibold text-ink-muted transition-colors hover:border-brand/40 hover:text-ink" to={`/app/patients/${encodeURIComponent(invoice.patientId)}`}>
+                Abrir paciente
+                <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          )}
         </article>
       ))}
     </div>
+  )
+}
+
+function PortalInvoiceDetails({ invoice }: { invoice: Invoice }) {
+  return (
+    <details className="mt-4 border-t border-line/70 pt-4">
+      <summary className="cursor-pointer text-xs font-semibold text-brand-strong">Ver detalle de factura</summary>
+      <div className="mt-4 space-y-4">
+        <ul className="divide-y divide-line/60 rounded-xl border border-line/60 bg-canvas/40 px-3">
+          {invoice.items.map((item, index) => (
+            <li className="flex items-start justify-between gap-4 py-3 text-xs" key={`${item.description}-${index}`}>
+              <span className="min-w-0"><span className="font-medium text-ink">{item.description}</span><span className="mt-1 block text-ink-subtle">{item.quantity} × {formatBillingCurrency(item.unitPrice)}</span></span>
+              <span className="shrink-0 font-semibold tabular-nums text-ink">{formatBillingCurrency(item.subtotal)}</span>
+            </li>
+          ))}
+        </ul>
+        <dl className="grid gap-2 border-t border-line/70 pt-3 text-xs sm:grid-cols-2">
+          <div className="flex justify-between gap-4"><dt className="text-ink-muted">Subtotal</dt><dd className="font-medium tabular-nums text-ink">{formatBillingCurrency(invoice.subtotal)}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="text-ink-muted">Cobertura</dt><dd className="font-medium tabular-nums text-ink">-{formatBillingCurrency(invoice.insuranceCoverage)}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="text-ink-muted">Impuestos</dt><dd className="font-medium tabular-nums text-ink">{formatBillingCurrency(invoice.taxes)}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="font-semibold text-ink">Total</dt><dd className="font-semibold tabular-nums text-ink">{formatBillingCurrency(invoice.total)}</dd></div>
+        </dl>
+      </div>
+    </details>
   )
 }

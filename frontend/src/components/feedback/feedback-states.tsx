@@ -101,17 +101,6 @@ export function NotFoundPage() {
   )
 }
 
-export function PatientPortalPendingPage() {
-  return (
-    <StateCard
-      description="El portal del paciente se habilitará en su módulo correspondiente. La cuenta no puede usar el área interna."
-      eyebrow="Portal del paciente"
-      icon={<HeartPulse aria-hidden="true" className="h-5 w-5" />}
-      title="Portal en preparación"
-    />
-  )
-}
-
 export function GlobalErrorBoundary({ children }: { children: ReactNode }) {
   return <ErrorBoundary>{children}</ErrorBoundary>
 }

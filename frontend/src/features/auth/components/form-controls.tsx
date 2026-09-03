@@ -1,8 +1,11 @@
 import { AlertCircle, CheckCircle2, Eye, EyeOff, LoaderCircle } from "lucide-react"
-import { useState, type InputHTMLAttributes, type ReactNode } from "react"
+import { useState, type InputHTMLAttributes } from "react"
 import type { UseFormRegisterReturn } from "react-hook-form"
 
+import { FieldError, FormErrorSummary, FormSection } from "@/components/ui/form-fields"
 import { cn } from "@/lib/utils"
+
+export { FieldError, FormErrorSummary, FormSection }
 
 interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "id"> {
   id: string
@@ -98,30 +101,6 @@ export function PasswordField({
   )
 }
 
-export function FieldError({ id, message }: { id: string; message: string }) {
-  return (
-    <p className="flex items-start gap-1.5 text-[0.68rem] leading-5 text-rose-strong" id={id}>
-      <AlertCircle aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-      <span>{message}</span>
-    </p>
-  )
-}
-
-export function FormErrorSummary({ messages }: { messages: string[] }) {
-  if (messages.length === 0) {
-    return null
-  }
-
-  return (
-    <div aria-live="assertive" className="rounded-xl border border-rose/20 bg-rose-soft/60 px-4 py-3" role="alert">
-      <p className="text-xs font-semibold text-ink">Revisa los datos del formulario</p>
-      <ul className="mt-1 space-y-0.5 text-xs text-ink-muted">
-        {messages.map((message, index) => <li key={`${message}-${index}`}>{message}</li>)}
-      </ul>
-    </div>
-  )
-}
-
 export function FormAlert({ message }: { message: string }) {
   return (
     <div aria-live="assertive" className="flex items-start gap-2.5 rounded-xl border border-rose/20 bg-rose-soft/60 px-4 py-3" role="alert">
@@ -166,25 +145,5 @@ export function FormDivider({ children }: { children: string }) {
       <span>{children}</span>
       <span className="h-px flex-1 bg-line" />
     </div>
-  )
-}
-
-export function FormSection({
-  title,
-  description,
-  children,
-}: {
-  title: string
-  description?: string
-  children: ReactNode
-}) {
-  return (
-    <section className="space-y-4 border-t border-line/70 pt-5 first:border-t-0 first:pt-0">
-      <div>
-        <h2 className="text-sm font-semibold text-ink">{title}</h2>
-        {description ? <p className="mt-1 text-xs leading-5 text-ink-muted">{description}</p> : null}
-      </div>
-      {children}
-    </section>
   )
 }

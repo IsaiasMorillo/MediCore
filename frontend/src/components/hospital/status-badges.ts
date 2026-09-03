@@ -1,0 +1,6 @@
+export { AppointmentStatusBadge } from "@/features/appointments/components/appointment-status-badge"
+export { DoctorStatusBadge } from "@/features/doctors/components/doctor-status-badge"
+export { InvoiceStatusBadge } from "@/features/billing/utils/billing-status"
+export { LaboratoryStatusBadge } from "@/features/laboratory/utils/laboratory-status"
+export { MedicationActiveBadge, MedicationStockBadge, PrescriptionStatusBadge } from "@/features/pharmacy/utils/pharmacy-status"
+export { PatientStatusBadge } from "@/features/patients/components/patient-status-badge"

@@ -130,6 +130,13 @@ button:disabled {
     var(--canvas);
 }
 
+.portal-shell {
+  background:
+    radial-gradient(circle at 8% 0%, color-mix(in oklch, var(--brand-soft) 70%, transparent), transparent 26rem),
+    radial-gradient(circle at 94% 18%, color-mix(in oklch, var(--indigo-soft) 52%, transparent), transparent 22rem),
+    var(--canvas);
+}
+
 .panel-shadow {
   box-shadow: 0 20px 55px -38px color-mix(in oklch, var(--ink) 32%, transparent);
 }

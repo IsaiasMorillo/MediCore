@@ -34,3 +34,6 @@ export const REPORT_ROLES = [
   "Farmacia",
   "Laboratorio",
 ] as const satisfies readonly UserRole[]
+export const REPORT_BILLING_ROLES = ["Admin"] as const satisfies readonly UserRole[]
+export const REPORT_PHARMACY_ROLES = ["Admin", "Farmacia"] as const satisfies readonly UserRole[]
+export const REPORT_LABORATORY_ROLES = ["Admin", "Laboratorio"] as const satisfies readonly UserRole[]

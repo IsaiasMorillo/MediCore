@@ -3,6 +3,8 @@ import { Navigate } from "react-router-dom"
 
 import { RouteLoadingState } from "@/components/feedback/feedback-states"
 import { useAuthSession } from "@/lib/auth/use-auth-session"
+import type { PortalSection } from "@/features/patient-portal/types"
+import type { ReportSection } from "@/features/reports/types"
 
 const DashboardPage = lazy(() => import("@/features/dashboard/pages/dashboard-page").then(({ DashboardPage: page }) => ({ default: page })))
 const LazyAdminAccountPage = lazy(() => import("@/features/auth/pages/admin-account-page").then(({ AdminAccountPage: page }) => ({ default: page })))
@@ -37,6 +39,9 @@ const LazyPharmacyMedicationEditPage = lazy(() => import("@/features/pharmacy/pa
 const LazyPharmacyPrescriptionsPage = lazy(() => import("@/features/pharmacy/pages/pharmacy-prescriptions-page").then(({ PharmacyPrescriptionsPage: page }) => ({ default: page })))
 const LazyBillingPage = lazy(() => import("@/features/billing/pages/billing-page").then(({ BillingPage: page }) => ({ default: page })))
 const LazyBillingInvoiceDetailPage = lazy(() => import("@/features/billing/pages/billing-invoice-detail-page").then(({ BillingInvoiceDetailPage: page }) => ({ default: page })))
+const LazyReportsPage = lazy(() => import("@/features/reports/pages/reports-page").then(({ ReportsPage: page }) => ({ default: page })))
+const LazyPatientPortalPage = lazy(() => import("@/features/patient-portal/pages/patient-portal-page").then(({ PatientPortalPage: page }) => ({ default: page })))
+const LazyPatientPortalShell = lazy(() => import("@/features/patient-portal/components/patient-portal-shell").then(({ PatientPortalShell: page }) => ({ default: page })))
 
 export function DashboardRoute() {
   return (
@@ -284,6 +289,30 @@ export function BillingInvoiceDetailRoute() {
   return (
     <Suspense fallback={<RouteLoadingState />}>
       <LazyBillingInvoiceDetailPage />
+    </Suspense>
+  )
+}
+
+export function ReportsRoute({ section }: { section: ReportSection }) {
+  return (
+    <Suspense fallback={<RouteLoadingState />}>
+      <LazyReportsPage section={section} />
+    </Suspense>
+  )
+}
+
+export function PatientPortalShellRoute() {
+  return (
+    <Suspense fallback={<RouteLoadingState />}>
+      <LazyPatientPortalShell />
+    </Suspense>
+  )
+}
+
+export function PatientPortalRoute({ section }: { section: PortalSection }) {
+  return (
+    <Suspense fallback={<RouteLoadingState />}>
+      <LazyPatientPortalPage section={section} />
     </Suspense>
   )
 }

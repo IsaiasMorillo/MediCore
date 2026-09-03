@@ -1,12 +1,13 @@
 import type { InvoiceStatus } from "@/features/billing/types"
 import { formatInvoiceStatus } from "@/features/billing/utils/billing-formatting"
+import { StatusBadge, type StatusTone } from "@/components/ui"
 
-const statusStyles: Record<string, string> = {
-  Anulada: "border-rose/25 bg-rose-soft text-rose-strong",
-  Pagada: "border-brand/25 bg-brand-soft text-brand-strong",
-  Pendiente: "border-amber/30 bg-amber-soft text-amber-strong",
+const statusTones: Record<string, StatusTone> = {
+  Anulada: "danger",
+  Pagada: "success",
+  Pendiente: "warning",
 }
 
 export function InvoiceStatusBadge({ status }: { status: InvoiceStatus }) {
-  return <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold ${statusStyles[status] ?? "border-line bg-canvas text-ink-muted"}`}>{formatInvoiceStatus(status)}</span>
+  return <StatusBadge label={formatInvoiceStatus(status)} tone={statusTones[status] ?? "neutral"} />
 }
